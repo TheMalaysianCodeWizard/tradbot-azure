@@ -1,0 +1,314 @@
+{
+  "_comment": "Knowledge base for the traditional chatbot. Each intent has example utterances (used by the TF-IDF matcher), optional regex patterns (checked first), and canned responses (one is chosen at random). Intents with a 'handler' are answered by Python code in skills.py instead of canned text.",
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "^(hi|hello|hey|howdy|hiya|yo|greetings)\\b",
+        "^good (morning|afternoon|evening)\\b"
+      ],
+      "examples": [
+        "hi",
+        "hello",
+        "hey there",
+        "good morning",
+        "howdy",
+        "hello bot",
+        "hi how are you",
+        "greetings",
+        "hii",
+        "helo",
+        "hey bot"
+      ],
+      "responses": [
+        "Hello! I'm TradBot, a rule-based chatbot. Type 'help' to see what I can do.",
+        "Hi there! Ask me something, or type 'help' for my list of capabilities.",
+        "Hey! Nice to meet you. Type 'help' if you'd like to see what I can do."
+      ]
+    },
+    {
+      "tag": "how_are_you",
+      "patterns": [
+        "how are (you|u)",
+        "how's it going",
+        "how is it going"
+      ],
+      "examples": [
+        "how are you",
+        "how are you doing",
+        "how's it going",
+        "are you ok",
+        "how do you feel"
+      ],
+      "responses": [
+        "I'm running smoothly, thanks for asking! How can I help?",
+        "All systems normal. What can I do for you?"
+      ]
+    },
+    {
+      "tag": "capabilities",
+      "patterns": [
+        "^(help|\\?|menu|commands|options)$",
+        "what can you do",
+        "your (capabilities|features|skills)",
+        "list (of )?(commands|capabilities|features)"
+      ],
+      "examples": [
+        "help",
+        "what can you do",
+        "list your capabilities",
+        "show me the commands",
+        "what are your features",
+        "menu",
+        "how do i use you"
+      ],
+      "handler": "capabilities"
+    },
+    {
+      "tag": "bot_identity",
+      "patterns": [
+        "who are you",
+        "what are you",
+        "your name",
+        "are you (a )?(bot|robot|human|ai|real)"
+      ],
+      "examples": [
+        "who are you",
+        "what is your name",
+        "are you a robot",
+        "are you human",
+        "what kind of bot are you",
+        "tell me about yourself"
+      ],
+      "responses": [
+        "I'm TradBot, a traditional (non-LLM) chatbot. I match your message with hand-written rules and a small TF-IDF model, and I use Azure AI Language to detect the sentiment of what you write.",
+        "My name is TradBot. I pick answers I was given in advance, and an Azure AI service tells me whether your message sounds positive, neutral, negative or mixed."
+      ]
+    },
+    {
+      "tag": "how_do_you_work",
+      "patterns": [
+        "how do you work",
+        "how were you (built|made)",
+        "what is tf.?idf"
+      ],
+      "examples": [
+        "how do you work",
+        "how were you built",
+        "how do you understand me",
+        "what technology do you use",
+        "explain your algorithm",
+        "what is tfidf"
+      ],
+      "responses": [
+        "Every message goes through a pipeline: (1) validate and clean the input, (2) try exact regex rules, (3) if none match, compare your words to example phrases using TF-IDF cosine similarity, (4) send the message to Azure AI Language for sentiment analysis, and (5) reply from my knowledge base, adjusting my tone if you sound upset. If the best match is weak, I ask 'did you mean' or fall back."
+      ]
+    },
+    {
+      "tag": "set_name",
+      "patterns": [
+        "\\b(my name is|call me|i am called|i'm called)\\s+[a-z]"
+      ],
+      "examples": [
+        "my name is sam",
+        "call me alex",
+        "i am called jordan"
+      ],
+      "handler": "set_name"
+    },
+    {
+      "tag": "get_name",
+      "patterns": [
+        "what('s| is) my name",
+        "do you (know|remember) my name",
+        "who am i"
+      ],
+      "examples": [
+        "what is my name",
+        "do you remember my name",
+        "who am i"
+      ],
+      "handler": "get_name"
+    },
+    {
+      "tag": "time",
+      "patterns": [
+        "what time",
+        "current time",
+        "time is it",
+        "^time$"
+      ],
+      "examples": [
+        "what time is it",
+        "tell me the time",
+        "current time",
+        "time please",
+        "can you tell me the time",
+        "do you know the time",
+        "what's the time now"
+      ],
+      "handler": "time"
+    },
+    {
+      "tag": "date",
+      "patterns": [
+        "what('s| is) (the |today's )?date",
+        "what day is (it|today)",
+        "today's date",
+        "^date$"
+      ],
+      "examples": [
+        "what is the date",
+        "what day is it",
+        "today's date",
+        "what is today"
+      ],
+      "handler": "date"
+    },
+    {
+      "tag": "math",
+      "patterns": [
+        "^(calc|calculate|compute|math)\\b",
+        "^what('s| is)\\s+[-\\d(][\\d\\s.+\\-*/()%^x]*$",
+        "^[-\\d(][\\d\\s.+\\-*/()%^x]*[\\d)]$"
+      ],
+      "examples": [
+        "calculate 2 + 2",
+        "what is 5 times 3",
+        "compute 10 / 4",
+        "calc 3^2"
+      ],
+      "handler": "math"
+    },
+    {
+      "tag": "joke",
+      "patterns": [
+        "\\bjoke\\b",
+        "make me laugh",
+        "something funny"
+      ],
+      "examples": [
+        "tell me a joke",
+        "say something funny",
+        "make me laugh",
+        "do you know any jokes"
+      ],
+      "responses": [
+        "Why do programmers prefer dark mode? Because light attracts bugs.",
+        "There are 10 kinds of people: those who understand binary and those who don't.",
+        "I would tell you a UDP joke, but you might not get it.",
+        "A SQL query walks into a bar, walks up to two tables and asks, 'Can I join you?'"
+      ]
+    },
+    {
+      "tag": "echo",
+      "patterns": [
+        "^echo\\b"
+      ],
+      "examples": [
+        "echo hello world",
+        "repeat after me",
+        "echo this"
+      ],
+      "handler": "echo"
+    },
+    {
+      "tag": "reverse",
+      "patterns": [
+        "^reverse\\b"
+      ],
+      "examples": [
+        "reverse hello",
+        "reverse this text",
+        "spell backwards"
+      ],
+      "handler": "reverse"
+    },
+    {
+      "tag": "chatbot_lifecycle",
+      "patterns": [
+        "(development|dev) life ?cycle",
+        "\\blifecycle\\b"
+      ],
+      "examples": [
+        "what is the chatbot development lifecycle",
+        "chatbot lifecycle",
+        "steps to build a chatbot",
+        "how do you build a chatbot",
+        "phases of chatbot development"
+      ],
+      "responses": [
+        "A common chatbot development lifecycle is: (1) define the purpose and scope, (2) design conversation flows and intents, (3) collect example utterances and responses, (4) build the NLU and dialogue logic, (5) test with real and malformed inputs, (6) deploy to a channel, and (7) monitor logs and iterate."
+      ]
+    },
+    {
+      "tag": "traditional_vs_llm",
+      "patterns": [
+        "(traditional|rule.?based).*(llm|gpt|generative)",
+        "(llm|gpt|generative).*(traditional|rule.?based)"
+      ],
+      "examples": [
+        "what is the difference between a rule based bot and an llm",
+        "traditional chatbot vs llm",
+        "why not use gpt",
+        "are you like chatgpt"
+      ],
+      "responses": [
+        "Traditional bots like me pick from pre-written answers using rules and statistics, so we are predictable, cheap and easy to audit, but we can't answer things we weren't designed for. LLM-based bots generate new text, so they are far more flexible but can be less predictable and need more compute."
+      ]
+    },
+    {
+      "tag": "analyze_sentiment",
+      "patterns": [
+        "^(sentiment|analy[sz]e)\\b"
+      ],
+      "examples": [
+        "sentiment i love this class",
+        "analyze this text",
+        "what is the sentiment of this",
+        "how does this sound",
+        "check the mood of my message",
+        "sentiment analysis"
+      ],
+      "responses": []
+    },
+    {
+      "tag": "thanks",
+      "patterns": [
+        "\\b(thanks|thank you|thx|ty|cheers|appreciate it)\\b"
+      ],
+      "examples": [
+        "thanks",
+        "thank you",
+        "thank you so much",
+        "appreciate it",
+        "cheers"
+      ],
+      "responses": [
+        "You're welcome!",
+        "Happy to help!",
+        "Any time."
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "^(bye|goodbye|see you|see ya|later|quit|exit|cya)\\b",
+        "good ?night"
+      ],
+      "examples": [
+        "bye",
+        "goodbye",
+        "see you later",
+        "i have to go",
+        "talk to you later",
+        "exit"
+      ],
+      "responses": [
+        "Goodbye! Thanks for chatting.",
+        "See you later!",
+        "Bye! Come back any time."
+      ]
+    }
+  ]
+}
